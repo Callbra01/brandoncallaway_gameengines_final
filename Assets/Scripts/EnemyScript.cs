@@ -43,7 +43,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("Hit");
+            collision.gameObject.GetComponent<PlayerController>().currentHearts--;
         }
     }
 
