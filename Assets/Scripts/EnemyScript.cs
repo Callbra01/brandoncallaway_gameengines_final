@@ -61,6 +61,7 @@ public class EnemyScript : MonoBehaviour
         StuckCheck();
     }
 
+    //
     void MoveTowards(Vector2 target)
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
