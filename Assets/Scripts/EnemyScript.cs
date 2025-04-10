@@ -17,6 +17,9 @@ public class EnemyScript : MonoBehaviour
     private float stuckTimer = 0f;
     private Vector2 lastPos;
 
+    public GameObject healthBar;
+    public float health = 100.0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,11 +27,13 @@ public class EnemyScript : MonoBehaviour
         rb.gravityScale = 0f;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         lastPos = rb.position;
+        healthBar.transform.localScale = new Vector3(1, 0.1375f, 1);
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Chase player if player is within detection range
         if (Vector2.Distance(transform.position, player.position) <= detectionRange)
         {
             chasingPlayer = true;
@@ -37,18 +42,39 @@ public class EnemyScript : MonoBehaviour
         {
             chasingPlayer = false;
         }
+
+        // Scale healthbar based on heath
+        healthBar.transform.localScale = new Vector3(health * 0.01f, 0.1375f, 1);
+    
+        // Destroy enemy game object if health drops to or below 0
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // If colliding with player, remove a heart from the player
         if (collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<PlayerController>().currentHearts--;
+        }
+
+        // If colliding with the players weapon, remove hp and add knockback force
+        if (collision.gameObject.tag == "Weapon")
+        {
+            health -= 25;
+            Vector2 weaponPos = collision.transform.position;
+
+            rb.AddForce(new Vector2(weaponPos.x - transform.position.x, weaponPos.y - transform.position.y ) * 50f);
         }
     }
 
     private void FixedUpdate()
     {
+        // If chasing the player, move towards the players position
+        // Otherwise, patrol between given waypoints
         if (chasingPlayer)
         {
             MoveTowards(player.position);
@@ -58,10 +84,11 @@ public class EnemyScript : MonoBehaviour
             Patrol();
         }
 
+        // Check if stuck
         StuckCheck();
     }
 
-    //
+    // Move enemy towars a given direction
     void MoveTowards(Vector2 target)
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
@@ -70,6 +97,7 @@ public class EnemyScript : MonoBehaviour
 
     void Patrol()
     {
+        // Avoid error via idling if no waypoints exist
         if (waypoints.Length == 0)
         {
             return;

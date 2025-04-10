@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float speed = 10.0f;
     public float movementAcceleration = 5.0f;
+    bool canMove = true;
     Rigidbody2D rb;
     Vector2 movement;
     Vector2 velocity;
@@ -30,6 +31,10 @@ public class PlayerController : MonoBehaviour
     [Header("Spawn")]
     public Transform playerSpawn;
 
+    [Header("Animation")]
+    public Animator anim;
+    public SpriteRenderer sr;
+
 
 
     // Start is called before the first frame update
@@ -37,6 +42,9 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         transform.position = playerSpawn.position;
+
+        anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
 
         // Set hearts to max
         currentHearts = maxHearts;
@@ -99,15 +107,21 @@ public class PlayerController : MonoBehaviour
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
-        // Set current attack direction
+        // Update x and y speed floats in animator
+        anim.SetFloat("XSpeed", Mathf.Abs(movement.x * speed));
+        anim.SetFloat("YSpeed", movement.y * speed);
+
+        // Set current attack direction  and current attack vector based on movement vector
         if (movement.x < 0)
         {
             currentAttackDir = ATTACKDIR.LEFT;
+            sr.flipX = false;
             currentAttackVector = new Vector3(-1, 0, 0);
         }
         else if (movement.x > 0)
         {
             currentAttackDir = ATTACKDIR.RIGHT;
+            sr.flipX = true;
             currentAttackVector = new Vector3(1, 0, 0);
         }
         if (movement.y < 0)
@@ -121,6 +135,7 @@ public class PlayerController : MonoBehaviour
             currentAttackVector = new Vector3(0, 1, 0);
         }
 
+
         // Normalize mouse input
         Vector2 direction = movement.normalized;
 
@@ -131,17 +146,42 @@ public class PlayerController : MonoBehaviour
         velocity.x = Mathf.Lerp(rb.velocity.x, wishVel.x, movementAcceleration * Time.deltaTime);
         velocity.y = Mathf.Lerp(rb.velocity.y, wishVel.y, movementAcceleration * Time.deltaTime);
 
+        // If the player cannot move, set velocity to 0 before updating rb velocity
+        if (!canMove)
+        {
+            velocity = Vector2.zero;
+        }
         // Update player velocity
         rb.velocity = velocity;
-
+        
     }
 
     void HandleAttacks()
     {
+        // Check current attack direction, and update weapon sprite position accordingly
+        if (currentAttackDir == ATTACKDIR.RIGHT)
+        {
+            weaponSprite.transform.position = transform.position + currentAttackVector;
+        }
+        else if (currentAttackDir == ATTACKDIR.LEFT)
+        {
+            weaponSprite.transform.position = transform.position + currentAttackVector;
+        }
+
+        if (currentAttackDir == ATTACKDIR.UP)
+        {
+            weaponSprite.transform.position = transform.position + currentAttackVector;
+        }
+        else if (currentAttackDir == ATTACKDIR.DOWN)
+        {
+            weaponSprite.transform.position = transform.position + currentAttackVector;
+        }
+
         // Check for attack input
         if (Input.GetKeyDown(KeyCode.Space) && canAttack)
         {
             isAttacking = true;
+            canMove = false;
             canAttack = false;
         }
 
@@ -152,12 +192,17 @@ public class PlayerController : MonoBehaviour
             weaponSprite.transform.position = transform.position + currentAttackVector;
             weaponSprite.SetActive(true);
         }
+        else
+        {
+            weaponSprite.SetActive(false);
+        }
 
         // Reset attack if attack timer reaches 0
         if (attackTimer <= 0)
         {
             isAttacking = false;
             canAttack = true;
+            canMove = true;
             attackTimer = attackTimerMax;
         }
 
