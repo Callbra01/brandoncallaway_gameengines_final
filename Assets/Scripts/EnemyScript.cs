@@ -59,6 +59,7 @@ public class EnemyScript : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<PlayerController>().currentHearts--;
+            collision.gameObject.GetComponent<PlayerController>().Respawn();
         }
 
         // If colliding with the players weapon, remove hp and add knockback force
@@ -67,7 +68,8 @@ public class EnemyScript : MonoBehaviour
             health -= 25;
             Vector2 weaponPos = collision.transform.position;
 
-            rb.AddForce(new Vector2(weaponPos.x - transform.position.x, weaponPos.y - transform.position.y ) * 50f);
+            // TODO: FIX ADD FORCE
+            //rb.AddForce(new Vector2(weaponPos.x - transform.position.x, weaponPos.y - transform.position.y ) * 50f);
         }
     }
 

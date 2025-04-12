@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     [Header("Attack")]
     ATTACKDIR currentAttackDir;
     Vector3 currentAttackVector;
-    public GameObject weaponSprite;
+    public GameObject weaponObject;
     bool isAttacking = false;
     bool canAttack = true;
     public float attackTimerMax = 0.5f;
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Set weapon sprite to inactive
-        weaponSprite.SetActive(false);
+        weaponObject.SetActive(false);
 
         // Set Timers to max
         attackTimer = attackTimerMax;
@@ -158,23 +158,26 @@ public class PlayerController : MonoBehaviour
 
     void HandleAttacks()
     {
+        // Update weapon sprite based on current attack direction
+        weaponObject.GetComponent<WeaponScript>().UpdateSprite((int)currentAttackDir);
+
         // Check current attack direction, and update weapon sprite position accordingly
         if (currentAttackDir == ATTACKDIR.RIGHT)
         {
-            weaponSprite.transform.position = transform.position + currentAttackVector;
+            weaponObject.transform.position = transform.position + currentAttackVector;
         }
         else if (currentAttackDir == ATTACKDIR.LEFT)
         {
-            weaponSprite.transform.position = transform.position + currentAttackVector;
+            weaponObject.transform.position = transform.position + currentAttackVector;
         }
 
         if (currentAttackDir == ATTACKDIR.UP)
         {
-            weaponSprite.transform.position = transform.position + currentAttackVector;
+            weaponObject.transform.position = transform.position + currentAttackVector;
         }
         else if (currentAttackDir == ATTACKDIR.DOWN)
         {
-            weaponSprite.transform.position = transform.position + currentAttackVector;
+            weaponObject.transform.position = transform.position + currentAttackVector;
         }
 
         // Check for attack input
@@ -189,12 +192,12 @@ public class PlayerController : MonoBehaviour
         if (isAttacking)
         {
             attackTimer -= Time.deltaTime;
-            weaponSprite.transform.position = transform.position + currentAttackVector;
-            weaponSprite.SetActive(true);
+            weaponObject.transform.position = transform.position + currentAttackVector;
+            weaponObject.SetActive(true);
         }
         else
         {
-            weaponSprite.SetActive(false);
+            weaponObject.SetActive(false);
         }
 
         // Reset attack if attack timer reaches 0
@@ -207,6 +210,12 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+    
+    // Enemy script calls respawn to reset player position upon heart loss
+    public void Respawn()
+    {
+        transform.position = playerSpawn.position;
+    }
 
     // If player dies, load fail scene
     void Death()
@@ -216,7 +225,7 @@ public class PlayerController : MonoBehaviour
 }
 
 
-enum ATTACKDIR
+public enum ATTACKDIR
 {
     UP,
     DOWN,
