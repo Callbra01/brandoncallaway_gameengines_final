@@ -161,24 +161,24 @@ public class PlayerController : MonoBehaviour
         // Update weapon sprite based on current attack direction
         weaponObject.GetComponent<WeaponScript>().UpdateSprite((int)currentAttackDir);
 
-        // Check current attack direction, and update weapon sprite position accordingly
-        if (currentAttackDir == ATTACKDIR.RIGHT)
+        switch ((int)currentAttackDir)
         {
-            weaponObject.transform.position = transform.position + currentAttackVector;
-        }
-        else if (currentAttackDir == ATTACKDIR.LEFT)
-        {
-            weaponObject.transform.position = transform.position + currentAttackVector;
+            case 0:
+                weaponObject.transform.position = transform.position + currentAttackVector;
+                break;
+            case 1:
+                weaponObject.transform.position = transform.position + currentAttackVector;
+                break;
+            case 2:
+                weaponObject.transform.position = transform.position + currentAttackVector;
+                break;
+            case 3:
+                weaponObject.transform.position = transform.position + currentAttackVector;
+                break;
         }
 
-        if (currentAttackDir == ATTACKDIR.UP)
-        {
-            weaponObject.transform.position = transform.position + currentAttackVector;
-        }
-        else if (currentAttackDir == ATTACKDIR.DOWN)
-        {
-            weaponObject.transform.position = transform.position + currentAttackVector;
-        }
+        // Check current attack direction, and update weapon sprite position accordingly
+
 
         // Check for attack input
         if (Input.GetKeyDown(KeyCode.Space) && canAttack)

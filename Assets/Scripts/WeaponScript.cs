@@ -7,21 +7,17 @@ public class WeaponScript : MonoBehaviour
     public GameObject horizontalSprite;
     public GameObject verticalSprite;
 
-    // Start is called before the first frame update
+    // Set both weapon sprites to non active
     void Start()
     {
         horizontalSprite.SetActive(false);
         verticalSprite.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void UpdateSprite(int attackDir)
     {
+        // Update sprite and flip x & y when applicable
         switch (attackDir)
         {
             case 0:
@@ -43,12 +39,14 @@ public class WeaponScript : MonoBehaviour
         }
     }
 
+    // Enable horizontal sprite and disable vertical sprite
     void SetHorizontal()
     {
         horizontalSprite.SetActive(true);
         verticalSprite.SetActive(false);
     }
 
+    // Enable vertical sprite and disable horizontal sprite
     void SetVertical()
     {
         horizontalSprite.SetActive(false);
