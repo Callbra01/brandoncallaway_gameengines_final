@@ -63,7 +63,6 @@ public class PlayerController : MonoBehaviour
 
         // Set Timers to max
         attackTimer = attackTimerMax;
-
     }
 
     // Update is called once per frame

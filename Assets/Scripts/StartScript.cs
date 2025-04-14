@@ -7,18 +7,30 @@ using UnityEngine.SceneManagement;
 public class StartScript : MonoBehaviour
 {
     // Reference vars
+    public GameObject titleText;
     public TextMeshProUGUI startText;
     public TextMeshProUGUI exitText;
+    public GameObject controlsText;
+    public GameObject loadingSprite;
+
+    public GameObject blackOverlay;
+    float controlsTimer;
+    bool controlsTimerEnabled = false;
 
     // Text size vars
     public float selectedTextSize;
     public float deselectedTextSize;
     int currentSelectionIndex;
 
+    public bool isStartScreen = false;
+
     // Set current selection to 'Start'
     void Start()
     {
         currentSelectionIndex = 0;
+        controlsTimer = 0.0f;
+        loadingSprite.transform.localScale = new Vector3(0f, 0.375f, 1);
+        loadingSprite.SetActive(false);
     }
 
     // Update Selection and Input
@@ -26,6 +38,7 @@ public class StartScript : MonoBehaviour
     {
         HandleInput();
         HandleSelection();
+        HandleControlsTimer();
     }
 
     // Update both start and exit text fontSize based on selection index
@@ -73,7 +86,15 @@ public class StartScript : MonoBehaviour
         {
             if (currentSelectionIndex == 0)
             {
-                SceneManager.LoadScene(3);
+                if (isStartScreen)
+                {
+                    ShowControls();
+                }
+                else
+                {
+                    SceneManager.LoadScene(3);
+                }
+                
             }
 
             if (currentSelectionIndex == 1)
@@ -81,5 +102,38 @@ public class StartScript : MonoBehaviour
                 Application.Quit();
             }
         }
+    }
+
+    void HandleControlsTimer()
+    {
+        if (controlsTimerEnabled)
+        {
+            controlsTimer += Time.deltaTime;
+            loadingSprite.transform.localScale = new Vector3(0f + controlsTimer * 10, 0.375f, 1);
+        }
+
+
+        if (controlsTimer > 2f)
+        {
+            SceneManager.LoadScene(3);
+        }
+    }
+
+    void ShowControls()
+    {
+        controlsTimerEnabled = true;
+
+        // Disable screen text
+        titleText.SetActive(false);
+        startText.gameObject.SetActive(false);
+        exitText.gameObject.SetActive(false);
+
+        // Display controls text
+        blackOverlay.SetActive(true);
+        controlsText.SetActive(true);
+
+        // Display loading bar
+        loadingSprite.SetActive(true);
+
     }
 }
